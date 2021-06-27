@@ -1,0 +1,212 @@
+genes: ["ORF1a", "ORF1b", "S", "ORF3a", "M", "N"]
+use_nextalign: true
+run_pangolin: true
+conda_environment: "workflow/envs/nextstrain.yaml"
+
+inputs:
+  - name: "can"
+    metadata: "data/canada_metadata.tsv"
+    sequences: "data/canada_sequences.fasta"
+  - name: "worldwide"
+    metadata: "data/gisaid_metadata.tsv"
+    sequences: "data/gisaid_sequences.fasta"
+
+builds:
+  canada-internal:
+    subsampling_scheme: canada-internal
+    geographic_scale: country
+    region: North America
+    country: Canada
+  bsixoneseven:
+    subsampling_scheme: bylineage
+    geographic_scale: country
+    region: North America
+    country: Canada
+    lineage:  ['B.1.617', 'B.1.617.1', 'B.1.617.2', 'B.1.617.3']
+    exclude_div: NA
+  watchlist:
+    subsampling_scheme: bylineage
+    geographic_scale: country
+    region: North America
+    country: Canada
+    lineage:  ['A.23.1', 'B.1.1.318', 'B.1.427', 'B.1.429', 'B.1.525', 'B.1.526 ', 'B.1.616', 'B.1.617.1', 'B.1.617.2', 'B.1.617.3', 'P.2', 'P.3', 'B.1.1.7', 'B.1.351']
+    exclude_div: ['Nunavut']
+    title: "Watchlist of VOI and VOC in Canada"
+  pone:
+    subsampling_scheme: bylineage
+    geographic_scale: country
+    region: North America
+    country: Canada
+    lineage:  ['P.1', 'P.1.1']
+    exclude_div: NA
+  newfoundland:
+    subsampling_scheme: bydivision
+    geographic_scale: country
+    region: North America
+    country: Canada
+    division: ['Newfoundland and Labrador']
+    exclude_div: ['Nunavut']
+    title: "Newfoundland Focused Sampling"
+  saskatchewan:
+    subsampling_scheme: bydivision
+    geographic_scale: country
+    region: North America
+    country: Canada
+    division: ['Saskatchewan']
+    exclude_div: ['Nunavut']
+    title: "Saskatchewan Focused Sampling"
+  alberta:
+    subsampling_scheme: bydivision
+    geographic_scale: country
+    region: North America
+    country: Canada
+    division: ['Alberta']
+    exclude_div: ['Nunavut']
+    title: "Alberta Focused Sampling"
+
+filter:
+  can:
+    exclude_where: "division='USA' division='Nunavut' division='Yukon'"
+    #skip_diagnostics: True
+
+exposure:
+  canada-internal:
+    trait: "division"
+    exposure: "division_exposure"
+
+subsampling:
+  canada-internal:
+    # Canadian focal samples
+    canada_late:
+      group_by: "country year month"
+      max_sequences: 10000
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can!=yes'" # subset sequences from input `can`
+    # Contextual samples for Canada from the rest of the world
+    global_late:
+      group_by: "country year month"
+      max_sequences: 1000
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can=yes' 'watch=yes'"
+      priorities:
+        type: "proximity"
+        focus: "canada_late"
+    # Canadian focal samples
+    canada_early:
+      group_by: "country year month"
+      max_sequences: 5000
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can!=yes'" # subset sequences from input `can`
+    # Contextual samples for Canada from the rest of the world
+    global_early:
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can=yes' 'watch=yes'"
+      priorities:
+        type: "proximity"
+        focus: "canada_early"
+  bylineage:    
+    canlin: # Up to 10000 sequences from Internal Canadian sequences of chosen lineage
+      group_by: "country year month"
+      max_sequences: 10000
+      exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
+      query: --query "(pango_lineage == {lineage})"
+    nearbylin: # Sequences from Internal Canadian sequences proximal to canlin
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"      
+      exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
+      priorities:
+        type: "proximity"
+        focus: "canlin"  
+    canada_late: # Recent CDN GISAID sequences focused on above
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes' 'country!=Canada' 'division={exclude_div}'" # subset sequences from input `can`            
+      priorities:
+        type: "proximity"
+        focus: "canlin"  
+    global_late: # Contextual samples from the rest of the world
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes' 'country==Canada' 'division={exclude_div}'"      
+      priorities:
+        type: "proximity"
+        focus: "canlin"
+  bydivision:    
+    canlin: # Up to 5000 sequences from CDN sequences of lineage
+      group_by: "country year month"
+      max_sequences: 5000
+      sampling_scheme: "--probabilistic-sampling"      
+      exclude: "--exclude-where 'can!=yes'" # subset sequences from input `can`
+      query: --query "(division == {division})"
+    canada_late: # Recent CDN sequences focused on above
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can!=yes'" # subset sequences from input `can`
+      query: --query "(division != {exclude_div})"
+      priorities:
+        type: "proximity"
+        focus: "canlin"    
+    global_late: # Contextual samples from the rest of the world
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes'"
+      query: --query "(division != {exclude_div})"
+      priorities:
+        type: "proximity"
+        focus: "canada_late"    
+    canada_early: # Canadian focal samples
+      group_by: "country year month"
+      max_sequences: 100
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'can!=yes'" # subset sequences from input `can`      
+      query: --query "(division != {exclude_div})"
+      priorities:
+        type: "proximity"
+        focus: "canlin"    
+    global_early: # Contextual samples for Canada from the rest of the world
+      group_by: "country year month"
+      max_sequences: 100
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes'"
+      query: --query "(division != {exclude_div})"
+      priorities:
+        type: "proximity"
+        focus: "canada_early"
+
+files:
+  auspice_config: "nml_profiles/internal/my_auspice_config.json"
+  description: "nml_profiles/internal/my_description.md"
+  colors: "nml_profiles/internal/colors.tsv"  
+
+
+skip_travel_history_adjustment: True
+
+traits:
+  canada-internal:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  bsixoneseven:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  pone:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  watchlist:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  newfoundland:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  alberta:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  saskatchewan:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
