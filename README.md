@@ -1,10 +1,6 @@
 # SARS-CoV-2-resources
 This is a repository containing SARS-CoV-2 resources for sequencing and genomic analysis curated by the Public Health Agency of Canada's National Microbiology (PHAC-NML). 
 
-
-
-[TOC]
-
 ## SARS-CoV-2 Genomics protocols 
 
 The [ARTIC Network](https://artic.network/) has developed a viral genomics protocol based on tiling amplicon schemes. This approach can be used to generate ONT nanopore or Ilumina sequence data. Several flavors of each bioinformatics pipeline exist for this protocol. The list below includes the pipelines primarily used by the Canadian public health laboratories. 
@@ -75,6 +71,10 @@ A tool for standardizing and validating contextual data associated with SARS-CoV
 - [auspice.us](https://auspice.us/)
 - [nextclade](https://clades.nextstrain.org/)
 - [COVID CG](https://covidcg.org/)
+
+### Internal Nextstrain Build Parameters
+
+The builds file and sampling parameters for NML's internal Nextstrain: [builds.yaml](builds.yaml)
 
 ## COVID-19 data repositories
 
