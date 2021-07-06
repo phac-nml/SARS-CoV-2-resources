@@ -76,6 +76,14 @@ A tool for standardizing and validating contextual data associated with SARS-CoV
 - [nextclade](https://clades.nextstrain.org/)
 - [COVID CG](https://covidcg.org/)
 
+### Internal Nextstrain Build Parameters
+
+The builds file and sampling parameters for NML's internal Nextstrain: [builds.yaml](builds.yaml)
+
+### Variants of Interest and Concern
+
+This list reflects our internal tracking of VOIs and VOCs: [variants.csv](variants.csv)
+
 ## COVID-19 data repositories
 
 - [GISAID](https://www.gisaid.org/)
