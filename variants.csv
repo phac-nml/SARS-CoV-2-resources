@@ -1,43 +1,45 @@
-Lineage,Status,Note
-A.23.1,VOI,w/ E484K
-AV.1,VOI,
-B.1.1.318,VOI,
-B.1.427,VOI,
-B.1.429,VOI,
-B.1.525,VOI,
-B.1.526,VOI,
-B.1.617.1,VOI,
-B.1.617.3,VOI,
-C.36.3,VOI,
-C.37,VOI,
-P.1.2,VOI,
-P.2,VOI,
-P.3,VOI,
-AY.1,VOC,
-AY.2,VOC,
-B.1.1.7,VOC,
-B.1.1.7,VOC,w/ E484K
-B.1.351,VOC,
-B.1.351.2,VOC,
-B.1.351.3,VOC,
-B.1.617.2,VOC,
-P.1,VOC,
-P.1.1,VOC,
-A.27,monitoring,
-A.29,monitoring,
-AT.1,monitoring,
-B.1,monitoring,
-B.1,monitoring,w/ 214insQAS
-B.1.1.1,monitoring,
-B.1.1.28,monitoring,w/ N501T and E484K
-B.1.1.7,monitoring,w/ S494P
-B.1.1.7,monitoring,w/Q677H
-B.1.160,monitoring,
-B.1.214.2,monitoring,
-B.1.324,monitoring,
-B.1.618,monitoring,
-B.1.620,monitoring,
-B.1.621,monitoring,
-P.1,monitoring,w/ N501T and E484Q
-R.1,monitoring,
-B.1.616,de-escalated,
+status,lineage,organization,who,note
+monitoring (Former VOI),B.1.427,WHO,Epsilon,
+monitoring (Former VOI),B.1.429,WHO,Epsilon,
+monitoring (Former VOI),P.2,WHO,Zeta,
+monitoring (Former VOI),P.3,WHO,Theta,
+monitoring,A.27,PHE,,
+monitoring,A.29,PHAC,,
+monitoring,AT.1,PHE,,
+monitoring,AV.1,WHO,,
+monitoring,B.1,,,
+monitoring,B.1,PHE,,w/ 214insQAS
+monitoring,B.1.1.1,PHE,,
+monitoring,B.1.1.28,PHE,,w/ N501T and E484K
+monitoring,B.1.1.7,PHE,,w/ S494P
+monitoring,B.1.1.7,PHE,,w/Q677H
+monitoring,B.1.160,PHE,,
+monitoring,B.1.214.2,PHE,,
+monitoring,B.1.324,PHE,,
+monitoring,B.1.466.2,WHO,,
+monitoring,B.1.617.3,PHAC-NML,,
+monitoring,B.1.618,PHAC-NML,,
+monitoring,B.1.620,PHE,,
+monitoring,B.1.621,WHO,,
+monitoring,P.1,PHE,,w/ N501T and E484Q
+monitoring,R.1,WHO,,
+monitoring,R.2,WHO,,
+de-escalated,B.1.616,PHAC-NML,,
+VOI,A.23.1,PHE,,w/ E484K
+VOI,B.1.1.318,PHE,,
+VOI,B.1.525,WHO,,
+VOI,B.1.526,WHO,,
+VOI,B.1.617.1,WHO,,
+VOI,C.36.3,PHE,,
+VOI,C.37,PHAC-NML,,
+VOI,P.1.2,WHO,Gamma,
+VOC,AY.1,PHAC,Delta,
+VOC,AY.2,PHAC,Delta,
+VOC,B.1.1.7,WHO,Alpha,
+VOC,B.1.1.7,PHE,Alpha,w/ E484K
+VOC,B.1.351,WHO,Beta,
+VOC,B.1.351.2,WHO,Beta,
+VOC,B.1.351.3,WHO,Beta,
+VOC,B.1.617.2,WHO,Delta,
+VOC,P.1,WHO,Gamma,
+VOC,P.1.1,PHAC-NML,Gamma,
