@@ -3,6 +3,7 @@ use_nextalign: true
 run_pangolin: true
 conda_environment: "workflow/envs/nextstrain.yaml"
 
+# Canada data is updated and aligned daily, GISAID data is added weekly on Saturdays to save on alignment time
 inputs:
   - name: "can"
     metadata: "data/canada_metadata.tsv"
@@ -10,69 +11,81 @@ inputs:
   - name: "worldwide"
     metadata: "data/gisaid_metadata.tsv"
     sequences: "data/gisaid_sequences.fasta"
+    aligned: "path/to/ncov/results/aligned_worldwide.fasta.xz"    
+    masked: "path/to/ncov/results/masked_worldwide.fasta.xz"
+    filtered: "path/to/ncov/results/filtered_worldwide.fasta.xz"
 
 builds:
-  canada-internal:
+  miniwatch: # Rotating series of watch lineages
+    subsampling_scheme: bylineage
+    geographic_scale: country
+    region: North America
+    country: Canada
+    lineage:  [ 'AY.27', 'AY.25' ]
+    exclude_div: NA
+    title: "Mini Watch Build"
+  twentyfive: # Focus on specific lineage and equal numbers of international/CDN
+    subsampling_scheme: halfandhalf
+    geographic_scale: country
+    region: North America
+    country: Canada
+    lineage:  [ 'AY.25' ]
+    exclude_div: NA
+    title: "AY.25 Build"
+  canada-internal: # Default build for Canada circulating lineages
     subsampling_scheme: canada-internal
     geographic_scale: country
     region: North America
     country: Canada
-  bsixoneseven:
+  delta: # Current crop of Delta sublineages
     subsampling_scheme: bylineage
     geographic_scale: country
     region: North America
     country: Canada
-    lineage:  ['B.1.617', 'B.1.617.1', 'B.1.617.2', 'B.1.617.3']
+    lineage: [ 'AY.1', 'AY.10', 'AY.11', 'AY.12', 'AY.13', 'AY.14', 'AY.15', 'AY.16', 'AY.17', 'AY.18', 'AY.19', 'AY.2', 'AY.20', 'AY.21', 'AY.22', 'AY.23', 'AY.24', 'AY.25', 'AY.26', 'AY.27', 'AY.28', 'AY.29', 'AY.3', 'AY.3.1', 'AY.30', 'AY.31', 'AY.32', 'AY.33', 'AY.34', 'AY.35', 'AY.36', 'AY.37', 'AY.38', 'AY.4', 'AY.4.1', 'AY.5', 'AY.5.1', 'AY.5.2', 'AY.6', 'AY.7', 'AY.7.1', 'AY.7.2', 'AY.8', 'AY.9', 'B.1.617.2' ]
     exclude_div: NA
-  watchlist:
+    title: "Delta Build"
+  watchlist: # Monitor any number of watchlist lineages
     subsampling_scheme: bylineage
     geographic_scale: country
     region: North America
     country: Canada
-    lineage:  ['A.23.1', 'B.1.1.318', 'B.1.427', 'B.1.429', 'B.1.525', 'B.1.526 ', 'B.1.616', 'B.1.617.1', 'B.1.617.2', 'B.1.617.3', 'P.2', 'P.3', 'B.1.1.7', 'B.1.351']
-    exclude_div: ['Nunavut']
+    lineage:  [ 'B.1.1.7' ]
+    exclude_div: NA
     title: "Watchlist of VOI and VOC in Canada"
-  pone:
+  gamma: # Gamma specific build
     subsampling_scheme: bylineage
     geographic_scale: country
     region: North America
     country: Canada
-    lineage:  ['P.1', 'P.1.1']
+    lineage:  [ 'P.1', 'P.1.1', 'P.1.10', 'P.1.10.1', 'P.1.10.2', 'P.1.11', 'P.1.2', 'P.1.3', 'P.1.4', 'P.1.5', 'P.1.6', 'P.1.7', 'P.1.8', 'P.1.9' ]
     exclude_div: NA
-  newfoundland:
-    subsampling_scheme: bydivision
-    geographic_scale: country
-    region: North America
-    country: Canada
-    division: ['Newfoundland and Labrador']
-    exclude_div: ['Nunavut']
-    title: "Newfoundland Focused Sampling"
-  saskatchewan:
-    subsampling_scheme: bydivision
-    geographic_scale: country
-    region: North America
-    country: Canada
-    division: ['Saskatchewan']
-    exclude_div: ['Nunavut']
-    title: "Saskatchewan Focused Sampling"
-  alberta:
-    subsampling_scheme: bydivision
-    geographic_scale: country
-    region: North America
-    country: Canada
-    division: ['Alberta']
-    exclude_div: ['Nunavut']
-    title: "Alberta Focused Sampling"
+    title: "Gamma Build"
 
 filter:
   can:
-    exclude_where: "division='USA' division='Nunavut' division='Yukon'"
+    exclude_where: "division='USA'"
     #skip_diagnostics: True
 
 exposure:
   canada-internal:
-    trait: "division"
-    exposure: "division_exposure"
+      trait: "division"
+      exposure: "division_exposure"
+  miniwatch:
+      trait: "division"
+      exposure: "division_exposure"
+  twentyfive:
+      trait: "division"
+      exposure: "division_exposure"
+  delta:
+      trait: "division"
+      exposure: "division_exposure"
+  watchlist:
+      trait: "division"
+      exposure: "division_exposure"
+  gamma:
+      trait: "division"
+      exposure: "division_exposure"
 
 subsampling:
   canada-internal:
@@ -112,9 +125,15 @@ subsampling:
       max_sequences: 10000
       exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
       query: --query "(pango_lineage == {lineage})"
+<<<<<<< HEAD
     nearbylin: # Sequences from Internal Canadian sequences proximal to canlin
       group_by: "country year month"
       max_sequences: 500
+=======
+    nearbylin: # Sequences from Internal Canadian sequences proximal to canlin (normally these are error seqs)
+      group_by: "country year month"
+      max_sequences: 1000
+>>>>>>> f680d87030175464a0830984f1bf0bae09aee03c
       sampling_scheme: "--probabilistic-sampling"      
       exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
       priorities:
@@ -124,7 +143,8 @@ subsampling:
       group_by: "country year month"
       max_sequences: 500
       sampling_scheme: "--probabilistic-sampling"
-      exclude: "--exclude-where 'worldwide!=yes' 'country!=Canada' 'division={exclude_div}'" # subset sequences from input `can`            
+      exclude: "--exclude-where 'worldwide!=yes' 'country!=Canada' 'division={exclude_div}'" # subset sequences from input `can`
+      query: --query "(pango_lineage == {lineage})"
       priorities:
         type: "proximity"
         focus: "canlin"  
@@ -132,11 +152,49 @@ subsampling:
       group_by: "country year month"
       max_sequences: 500
       sampling_scheme: "--probabilistic-sampling"
-      exclude: "--exclude-where 'worldwide!=yes' 'country==Canada' 'division={exclude_div}'"      
+      exclude: "--exclude-where 'worldwide!=yes' 'country=Canada' 'division={exclude_div}'"
+      query: --query "(pango_lineage == {lineage})"
       priorities:
         type: "proximity"
         focus: "canlin"
-  bydivision:    
+  halfandhalf:    
+    canlin: # Up to 7500 sequences from Internal Canadian sequences of chosen lineage
+      group_by: "country year month"
+      max_sequences: 7500
+      exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
+      query: --query "(pango_lineage == {lineage})"
+    nearbylin: # Sequences from Internal Canadian sequences proximal to canlin (normally these are erroroneously assigned lineages)
+      group_by: "country year month"
+      max_sequences: 100
+      sampling_scheme: "--probabilistic-sampling"      
+      exclude: "--exclude-where 'can!=yes' 'division={exclude_div}'" # subset sequences from input `can`
+      priorities:
+        type: "proximity"
+        focus: "canlin"  
+    canada_late: # Recent CDN GISAID sequences focused on above
+      group_by: "country year month"
+      max_sequences: 500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes' 'country!=Canada' 'division={exclude_div}'" # subset sequences from input `can`
+      query: --query "(pango_lineage == {lineage})"
+      priorities:
+        type: "proximity"
+        focus: "canlin"  
+    global_late: # Contextual samples from the rest of the world
+      group_by: "country year month"
+      max_sequences: 7500
+      sampling_scheme: "--probabilistic-sampling"
+      exclude: "--exclude-where 'worldwide!=yes' 'country=Canada' 'division={exclude_div}'"
+      query: --query "(pango_lineage == {lineage})"
+      priorities:
+        type: "proximity"
+        focus: "canlin"
+    global: # Contextual samples from the rest of the world not focused on canlin but of lineage {lineage}
+      group_by: "country year month"
+      max_sequences: 500      
+      exclude: "--exclude-where 'worldwide!=yes' 'country=Canada' 'division={exclude_div}'"
+      query: --query "(pango_lineage == {lineage})"      
+  bydivision: # Specific to a division with similar subsampling as above. Rarely used
     canlin: # Up to 5000 sequences from CDN sequences of lineage
       group_by: "country year month"
       max_sequences: 5000
@@ -192,21 +250,21 @@ traits:
   canada-internal:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
-  bsixoneseven:
+  miniwatch:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
-  pone:
+  twentyfive:
+    sampling_bias_correction: 2.5
+    columns: ["division_exposure"]
+  delta:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
   watchlist:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
-  newfoundland:
+  gamma:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
-  alberta:
-    sampling_bias_correction: 2.5
-    columns: ["division_exposure"]
-  saskatchewan:
+  gammaMay:
     sampling_bias_correction: 2.5
     columns: ["division_exposure"]
