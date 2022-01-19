@@ -78,7 +78,8 @@ The builds file and sampling parameters for NML's internal Nextstrain: [builds.y
 
 ### Variants of Interest and Concern
 
-This list reflects our internal tracking of VOIs and VOCs: [variants.csv](variants.csv)
+This list reflects our internal tracking of VOIs and VOCs: [variants.csv](variants.csv)  
+Updates are automatically pushed to the _variants-update_ branch and only merged occasionally.
 
 ## COVID-19 data repositories
 
