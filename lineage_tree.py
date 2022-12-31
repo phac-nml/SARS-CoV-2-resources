@@ -12,7 +12,7 @@ LINEAGES_URL = "https://raw.githubusercontent.com/cov-lineages/pango-designation
 @click.command()
 @click.option("--output", help="Output newick phylogeny.", required=True)
 def main(output):
-    """Create a newick tree out of the nextclade dataset Auspice JSON"""
+    """Create a newick tree from the list of lineages and aliases."""
 
     # Create output directory if it doesn't exist
     outdir = os.path.dirname(output)
